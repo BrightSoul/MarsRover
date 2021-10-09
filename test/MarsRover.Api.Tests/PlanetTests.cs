@@ -10,7 +10,7 @@ namespace MarsRover.Api.Test
         [Test]
         [TestCase(0, 0, false)]
         [TestCase(1, 0, true)]
-        public void HasObstacleAt_ReturnsCorrectResult(int checkLocationX, int checkLocationY, bool expectToFindObstacle)
+        public void HasObstacleAt_ReturnsCorrectResult(int checkLocationX, int checkLocationY, bool expectToEncounterObstacle)
         {
             // Arrange
             Size size = new(2, 1);
@@ -19,10 +19,10 @@ namespace MarsRover.Api.Test
             Point pointToCheck = new(checkLocationX, checkLocationY);
 
             // Act
-            bool actuallyFoundObstacle = planet.HasObstacleAt(pointToCheck);
+            bool actuallyEncounteredObstacle = planet.HasObstacleAt(pointToCheck);
 
             // Assert
-            Assert.AreEqual(expectToFindObstacle, actuallyFoundObstacle);
+            Assert.AreEqual(expectToEncounterObstacle, actuallyEncounteredObstacle);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace MarsRover.Api.Test
         [Test]
         [TestCase(0.0, false)] // Invalid size, valid ratio
         [TestCase(1.0, true)] // Invalid size, valid ratio
-        public void CreateWithRandomlyGeneratedOnstacles_PlacesObstaclesAccordingToRatio(double obstaclesToEmptySpaceRatio, bool expectToFindObstacle)
+        public void CreateWithRandomlyGeneratedOnstacles_PlacesObstaclesAccordingToRatio(double obstaclesToEmptySpaceRatio, bool expectToEncounterObstacle)
         {
             // Arrange
             Size size = new(1, 1);
@@ -90,10 +90,10 @@ namespace MarsRover.Api.Test
             Point checkLocation = new Point(0, 0);
 
             // Act
-            bool actuallyFoundObstacle = planet.HasObstacleAt(checkLocation);
+            bool actuallyEncounteredObstacle = planet.HasObstacleAt(checkLocation);
             
             // Assert
-            Assert.AreEqual(expectToFindObstacle, actuallyFoundObstacle);
+            Assert.AreEqual(expectToEncounterObstacle, actuallyEncounteredObstacle);
         }
     }
 }
