@@ -19,14 +19,14 @@ namespace MarsRover.Api.Models
         public Point Location => location;
         public Orientation Orientation => orientation;
 
-        public static Rover CreateAndSendTo(Planet planet, Point location, Orientation orientation)
+        public static Rover CreateAndSendTo(Planet planet, Point landingLocation, Orientation landingOrientation)
         {
-            if (planet.HasObstacleAt(location))
+            if (planet.HasObstacleAt(landingLocation))
             {
-                throw new ObstacleEncounteredException(planet, location);
+                throw new ObstacleEncounteredException(planet, landingLocation);
             }
 
-            return new Rover(planet, location, orientation);
+            return new Rover(planet, landingLocation, landingOrientation);
         }
 
         public void ExecuteCommands(params char[] commands)

@@ -28,9 +28,9 @@ Size size = new(25, 10);
 Planet mars = Planet.CreateWithRandomlyGeneratedObstacles(size); // Or Planet.CreateEmpty(size)
 
 // Then send the rover to a specific location and orientation on the planet
-Point sendLocation = new(15, 5);
-Orientation sendOrientation = Orientation.North;
-Rover rover = Rover.CreateAndSendTo(mars, sendLocation, sendOrientation); // Might throw ObstacleEncounteredException
+Point landingLocation = new(15, 5);
+Orientation landingOrientation = Orientation.North;
+Rover rover = Rover.CreateAndSendTo(mars, landingLocation, landingOrientation); // Might throw ObstacleEncounteredException
 
 // Optionally subscribe the Moved event (fires after each individual command)
 rover.Moved += (object? sender, MovedEventArgs args) =>
