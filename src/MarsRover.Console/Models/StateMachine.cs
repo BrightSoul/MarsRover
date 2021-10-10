@@ -12,7 +12,7 @@ namespace MarsRover.Console.Models
         {
             StateMachineContext context = new("MARS", planet)
             {
-                State = State.InputSendLocation,
+                State = State.InputLandingLocation,
                 Location = new(planet.Size.Width / 2, planet.Size.Height / 2),
                 Orientation = Orientation.North
             };
@@ -26,8 +26,8 @@ namespace MarsRover.Console.Models
                 RenderPlanet(context);
                 context = context.State switch
                 {
-                    State.InputSendLocation => InputSendLocation(context),
-                    State.InputSendOrientation => InputSendOrientation(context),
+                    State.InputLandingLocation => InputLandingLocation(context),
+                    State.InputLandingOrientation => InputSendOrientation(context),
                     State.SendRover => SendRover(context),
                     State.InputCommands => InputCommands(context),
                     State.ExecuteCommands => ExecuteCommands(context),
@@ -50,12 +50,12 @@ namespace MarsRover.Console.Models
                     char square = hasObstacle ? '#' : ' ';
                     if (location == context.Location)
                     {
-                        if (context.State == State.InputSendLocation || context.State == State.InputSendOrientation)
+                        if (context.State == State.InputLandingLocation || context.State == State.InputLandingOrientation)
                         {
                             BackgroundColor = hasObstacle ? ConsoleColor.DarkRed : ConsoleColor.DarkGreen;
                         }
 
-                        if (context.State != State.InputSendLocation)
+                        if (context.State != State.InputLandingLocation)
                         {
                             square = context.Orientation switch
                             {
@@ -82,9 +82,9 @@ namespace MarsRover.Console.Models
             WriteLine('└' + "".PadLeft(context.Planet.Size.Width, '─') + "┘");
         }
 
-        private static StateMachineContext InputSendLocation(StateMachineContext context)
+        private static StateMachineContext InputLandingLocation(StateMachineContext context)
         {
-            PromptInputSendLocation(context);
+            PromptInputLandingLocation(context);
             ConsoleKeyInfo key = ReadKey(intercept: true);
 
             return context with
@@ -100,21 +100,21 @@ namespace MarsRover.Console.Models
 
                 State = key.Key switch
                 {
-                    ConsoleKey.Enter when !context.Planet.HasObstacleAt(context.Location) => State.InputSendOrientation,
-                    _ => State.InputSendLocation
+                    ConsoleKey.Enter when !context.Planet.HasObstacleAt(context.Location) => State.InputLandingOrientation,
+                    _ => State.InputLandingLocation
                 }
             };
         }
 
-        private static void PromptInputSendLocation(StateMachineContext context)
+        private static void PromptInputLandingLocation(StateMachineContext context)
         {
-            Write($"Use arrow keys to choose deploy location: ");
+            Write($"Use arrow keys to select a landing location: ");
             bool hasObstacle = context.Planet.HasObstacleAt(context.Location);
             ForegroundColor = hasObstacle ? ConsoleColor.Red : ConsoleColor.Green;
             Write(context.Location);
             ForegroundColor = ConsoleColor.DarkGray;
             Write(" ");
-            Write(hasObstacle ? "Can't deploy on obstacle" : "Press ENTER to confirm");
+            Write(hasObstacle ? "Can't land on obstacle" : "Press ENTER to confirm");
             WritePadding();
             ResetColor();
         }
@@ -138,14 +138,14 @@ namespace MarsRover.Console.Models
                 State = keyInfo.Key switch
                 {
                     ConsoleKey.Enter => State.SendRover,
-                    _ => State.InputSendOrientation
+                    _ => State.InputLandingOrientation
                 }
             };
         }
 
         private static void PromptInputSendOrientation(StateMachineContext context)
         {
-            Write($"Use arrow keys to choose deploy orientation: ");
+            Write($"Use arrow keys to select landing orientation: ");
             ForegroundColor = ConsoleColor.Green;
             Write(context.Orientation);
             ForegroundColor = ConsoleColor.DarkGray;
@@ -201,7 +201,7 @@ namespace MarsRover.Console.Models
 
         private static void PromptInputCommandsHeader(StateMachineContext context)
         {
-            Write($"Now at {{X={context.Location.X},Y={context.Location.Y},O={context.Orientation}}}. Input one or more commands: ");
+            Write($"Rover at {{X={context.Location.X},Y={context.Location.Y},{context.Orientation}}}. Input one or more commands: ");
         }
 
         private static StateMachineContext SendRover(StateMachineContext context)

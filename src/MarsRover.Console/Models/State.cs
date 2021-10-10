@@ -2,8 +2,8 @@
 {
     public enum State
     {
-        InputSendLocation,
-        InputSendOrientation,
+        InputLandingLocation,
+        InputLandingOrientation,
         SendRover,
         InputCommands,
         ExecuteCommands,

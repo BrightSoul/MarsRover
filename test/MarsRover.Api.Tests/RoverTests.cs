@@ -28,15 +28,15 @@ namespace MarsRover.Api.Test
         [TestCase(MoveBackwardCommand, Orientation.East, 0, 1, 2, 1)]  // At the left edge, reversing west
         [TestCase(MoveBackwardCommand, Orientation.South, 1, 0, 1, 2)] // At the top edge, reversing south
         [TestCase(MoveBackwardCommand, Orientation.West, 2, 1, 0, 1)]  // At the right edge, reversing east
-        public void ExecuteCommands_UpdatesLocationAndKeepsOrientation_WhenMovingForwardOrBackwardWithNoObstacles(char command, Orientation deployOrientation, int deployLocationX, int deployLocationY, int expectedFinalLocationX, int expectedFinalLocationY)
+        public void ExecuteCommands_UpdatesLocationAndKeepsOrientation_WhenMovingForwardOrBackwardWithNoObstacles(char command, Orientation landingOrientation, int landingLocationX, int landingLocationY, int expectedFinalLocationX, int expectedFinalLocationY)
         {
             // Arrange
             Point expectedFinalLocation = new(expectedFinalLocationX, expectedFinalLocationY);
-            Orientation expectedOrientation = deployOrientation;
+            Orientation expectedOrientation = landingOrientation;
             Size size = new(3, 3);
             Planet planet = Planet.CreateEmpty(size);
-            Point deployLocation = new(deployLocationX, deployLocationY);
-            Rover rover = Rover.CreateAndSendTo(planet, deployLocation, deployOrientation);
+            Point landingLocation = new(landingLocationX, landingLocationY);
+            Rover rover = Rover.CreateAndSendTo(planet, landingLocation, landingOrientation);
             Point? actualNotifiedLocation = null;
             Orientation? actualNotifiedOrientation = null;
 
@@ -59,14 +59,14 @@ namespace MarsRover.Api.Test
         [Test]
         [TestCase(MoveForwardCommand, Orientation.West, 0, 0, 1, 0)]  // At the left edge, going west
         [TestCase(MoveBackwardCommand, Orientation.West, 1, 0, 0, 0)]  // At the left edge, going west
-        public void ExecuteCommands_RaisesException_WhenMovingForwardOrBackwardToAnObstacle(char command, Orientation deployOrientation, int deployLocationX, int deployLocationY, int destinationX, int destinationY)
+        public void ExecuteCommands_RaisesException_WhenMovingForwardOrBackwardToAnObstacle(char command, Orientation landingOrientation, int landingLocationX, int landingLocationY, int destinationX, int destinationY)
         {
             // Arrange
             Size size = new(2, 1);
             Point obstacleLocation = new Point(destinationX, destinationY);
             Planet planet = Planet.CreateWithGivenObstacles(size, new [] { obstacleLocation });
-            Point deployLocation = new(deployLocationX, deployLocationY);
-            Rover rover = Rover.CreateAndSendTo(planet, deployLocation, deployOrientation);
+            Point landingLocation = new(landingLocationX, landingLocationY);
+            Rover rover = Rover.CreateAndSendTo(planet, landingLocation, landingOrientation);
 
             // Act & Assert
             ObstacleEncounteredException? exc = Assert.Throws<ObstacleEncounteredException>(() => 
@@ -85,12 +85,12 @@ namespace MarsRover.Api.Test
             // Arrange
             Size size = new(3, 3);
             Planet planet = Planet.CreateEmpty(size);
-            Point deployLocation = new(1, 1);
-            Point expectedLocation = deployLocation;
-            Orientation deployOrientation = Orientation.North;
+            Point landingLocation = new(1, 1);
+            Point expectedLocation = landingLocation;
+            Orientation landingOrientation = Orientation.North;
             Orientation? actualNotifiedOrientation = null;
             Point? actualNotifiedLocation = null;
-            Rover rover = Rover.CreateAndSendTo(planet, deployLocation, deployOrientation);
+            Rover rover = Rover.CreateAndSendTo(planet, landingLocation, landingOrientation);
             rover.Moved += (sender, args) =>
             {
                 actualNotifiedLocation = args.Location;
@@ -115,9 +115,9 @@ namespace MarsRover.Api.Test
             Size size = new (3, 3);
             Point obstacleLocation = new Point(1, 2);
             Planet planet = Planet.CreateWithGivenObstacles(size, new [] { obstacleLocation });
-            Point deployLocation = new Point(0, 0);
-            Orientation deployOrientation = Orientation.East;
-            Rover rover = Rover.CreateAndSendTo(planet, deployLocation, deployOrientation);
+            Point landingLocation = new Point(0, 0);
+            Orientation landingOrientation = Orientation.East;
+            Rover rover = Rover.CreateAndSendTo(planet, landingLocation, landingOrientation);
             char[] commands = "frff".ToCharArray();
             Point expectedLocationAfterMovement = new(1, 1);
             Orientation expectedOrientationAfterMovement = Orientation.South;
