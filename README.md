@@ -18,7 +18,7 @@ This is a .NET 5 solution.
  * Implement obstacle detection before each move to a new square. [Rover.cs#L73](src/MarsRover.Api/Models/Rover.cs#L73). If a given sequence of commands encounters an obstacle, the rover moves up to the last possible point, aborts the sequence and reports the obstacle. [Rover.cs#L108](src/MarsRover.Api/Models/Rover.cs#L108)
 
 ## API sample usage
-The [MarsRover.Api](src/MarsRover.Api/MarsRover.Api.csproj) project is a class library which can be packed and referenced by other projects. Use it as follows:
+The [MarsRover.Api](src/MarsRover.Api/MarsRover.Api.csproj) project is a class library which can be packed and referenced by other projects. Use it as follows.
 ```csharp
 using System.Drawing;
 using MarsRover.Api.Models;
@@ -42,6 +42,7 @@ rover.Moved += (object? sender, MovedEventArgs args) =>
 string commands = "frbl"; // Move forward, turn right, move backward, turn left
 rover.ExecuteCommands(commands.ToCharArray()); // Might throw ObstacleEncounteredException
 ```
+ > Please note: rovers won't collide with themselves. So, if you're sending multiple rovers to the same planet, they will be able to occupy the same location.
 
 ## Coordinate system
 Each of the locations on a planet with e.g. `new Size(3, 2)` will be addressable by these set of coordinates on a XY plane.
