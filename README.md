@@ -2,9 +2,9 @@
 You're part of the team that explores Mars by sending remotely controlled vehicles to the surface of the planet. Develop an API that translates the commands sent from earth to instructions that are understood by the rover.
 
 ## Getting started
-This is a .NET 5 solution you can open in Visual Studio, Visual Studio Code or other third-party IDE. Run the project on the command line by executing:
- * `dotnet test` to run the unit tests found in the [MarsRover.Api.Tests](test/MarsRover.Api.Tests/MarsRover.Api.Tests.csproj) project;
- * `dotnet run` to launch the [MarsRover.Console](src/MarsRover.Console/MarsRover.Console.csproj) visualization project.
+This is a .NET 5 solution.
+ * Run `dotnet test` to perform the unit tests found in the [MarsRover.Api.Tests](test/MarsRover.Api.Tests/MarsRover.Api.Tests.csproj) project;
+ * Run `dotnet run --project src/MarsRover.Console` to launch the [MarsRover.Console](src/MarsRover.Console/MarsRover.Console.csproj) visualization project.
 
 ## Visualization
 ![visualization.gif](visualization.gif)
@@ -32,7 +32,7 @@ Point sendLocation = new(15, 5);
 Orientation sendOrientation = Orientation.North;
 Rover rover = Rover.CreateAndSendTo(mars, sendLocation, sendOrientation); // Might throw ObstacleEncounteredException
 
-// Optionally subscribe the Moved event (fires after each command)
+// Optionally subscribe the Moved event (fires after each individual command)
 rover.Moved += (object? sender, MovedEventArgs args) =>
 {
   Console.WriteLine($"Location {args.Location}, Orientation: {args.Orientation}");
