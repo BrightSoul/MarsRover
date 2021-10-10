@@ -4,21 +4,13 @@ using MarsRover.Api.Models;
 
 namespace MarsRover.Console.Models
 {
-    public class StateMachineContext
+    public record StateMachineContext(string Title, Planet Planet)
     {
-        public StateMachineContext(string title, Planet planet)
-        {
-            Title = title;
-            Planet = planet;
-        }
-
-        public string Title { get; }
-        public Planet Planet { get; }
-        public State State { get; set; }
-        public Point Location { get; set; }
-        public Orientation Orientation { get; set; }
-        public string Commands = string.Empty;
-        public Rover? Rover { get; set; } = null;
-        public Queue<CommandResult> RenderQueue { get; } = new();
+        public State State { get; init; }
+        public Rover? Rover { get; init; }
+        public Point Location { get; init; }
+        public Orientation Orientation { get; init; }
+        public string Commands { get; init; } = string.Empty;
+        public Queue<CommandResult> RenderQueue { get; } = new Queue<CommandResult>();
     }
 }

@@ -16,7 +16,7 @@ namespace MarsRover.Console.Models
                 Location = new(planet.Size.Width / 2, planet.Size.Height / 2),
                 Orientation = Orientation.North
             };
-            
+
             Clear();
 
             while (true) // Render loop
@@ -24,7 +24,7 @@ namespace MarsRover.Console.Models
                 CursorVisible = false;
                 SetCursorPosition(0, 0);
                 RenderPlanet(context);
-                context.State = context.State switch
+                context = context.State switch
                 {
                     State.InputSendLocation => InputSendLocation(context),
                     State.InputSendOrientation => InputSendOrientation(context),
@@ -82,23 +82,27 @@ namespace MarsRover.Console.Models
             WriteLine('└' + "".PadLeft(context.Planet.Size.Width, '─') + "┘");
         }
 
-        private static State InputSendLocation(StateMachineContext context)
+        private static StateMachineContext InputSendLocation(StateMachineContext context)
         {
             PromptInputSendLocation(context);
-            ConsoleKeyInfo key = ReadKey();
-            context.Location = key.Key switch
-            {
-                ConsoleKey.UpArrow when context.Location.Y > 0 => new Point(context.Location.X, context.Location.Y - 1),
-                ConsoleKey.DownArrow when context.Location.Y < context.Planet.Size.Height - 1 => new Point(context.Location.X, context.Location.Y + 1),
-                ConsoleKey.LeftArrow when context.Location.X > 0 => new Point(context.Location.X - 1, context.Location.Y),
-                ConsoleKey.RightArrow when context.Location.X < context.Planet.Size.Width - 1 => new Point(context.Location.X + 1, context.Location.Y),
-                _ => context.Location
-            };
+            ConsoleKeyInfo key = ReadKey(intercept: true);
 
-            return key.Key switch
+            return context with
             {
-                ConsoleKey.Enter when !context.Planet.HasObstacleAt(context.Location) => State.InputSendOrientation,
-                _ => State.InputSendLocation
+                Location = key.Key switch
+                {
+                    ConsoleKey.UpArrow when context.Location.Y > 0 => new Point(context.Location.X, context.Location.Y - 1),
+                    ConsoleKey.DownArrow when context.Location.Y < context.Planet.Size.Height - 1 => new Point(context.Location.X, context.Location.Y + 1),
+                    ConsoleKey.LeftArrow when context.Location.X > 0 => new Point(context.Location.X - 1, context.Location.Y),
+                    ConsoleKey.RightArrow when context.Location.X < context.Planet.Size.Width - 1 => new Point(context.Location.X + 1, context.Location.Y),
+                    _ => context.Location
+                },
+
+                State = key.Key switch
+                {
+                    ConsoleKey.Enter when !context.Planet.HasObstacleAt(context.Location) => State.InputSendOrientation,
+                    _ => State.InputSendLocation
+                }
             };
         }
 
@@ -115,23 +119,27 @@ namespace MarsRover.Console.Models
             ResetColor();
         }
 
-        private static State InputSendOrientation(StateMachineContext context)
+        private static StateMachineContext InputSendOrientation(StateMachineContext context)
         {
             PromptInputSendOrientation(context);
-            ConsoleKeyInfo keyInfo = ReadKey();
-            context.Orientation = keyInfo.Key switch
-            {
-                ConsoleKey.UpArrow => Orientation.North,
-                ConsoleKey.DownArrow => Orientation.South,
-                ConsoleKey.LeftArrow => Orientation.West,
-                ConsoleKey.RightArrow => Orientation.East,
-                _ => context.Orientation
-            };
+            ConsoleKeyInfo keyInfo = ReadKey(intercept: true);
 
-            return keyInfo.Key switch
+            return context with
             {
-                ConsoleKey.Enter => State.SendRover,
-                _ => State.InputSendOrientation
+                Orientation = keyInfo.Key switch
+                {
+                    ConsoleKey.UpArrow => Orientation.North,
+                    ConsoleKey.DownArrow => Orientation.South,
+                    ConsoleKey.LeftArrow => Orientation.West,
+                    ConsoleKey.RightArrow => Orientation.East,
+                    _ => context.Orientation
+                },
+
+                State = keyInfo.Key switch
+                {
+                    ConsoleKey.Enter => State.SendRover,
+                    _ => State.InputSendOrientation
+                }
             };
         }
 
@@ -147,34 +155,38 @@ namespace MarsRover.Console.Models
             ResetColor();
         }
 
-        private static State InputCommands(StateMachineContext context)
+        private static StateMachineContext InputCommands(StateMachineContext context)
         {
             PromptInputCommands(context);
             ConsoleKeyInfo keyInfo = ReadKey(intercept: true);
-            context.Commands = keyInfo.Key switch
-            {
-                ConsoleKey.L => $"{context.Commands}l",
-                ConsoleKey.R => $"{context.Commands}r",
-                ConsoleKey.F => $"{context.Commands}f",
-                ConsoleKey.B => $"{context.Commands}b",
-                ConsoleKey.LeftArrow => "l",
-                ConsoleKey.RightArrow => "r",
-                ConsoleKey.UpArrow => "f",
-                ConsoleKey.DownArrow => "b",
-                ConsoleKey.Backspace => context.Commands.Substring(0, Math.Max(0, context.Commands.Length - 1)),
-                _ => context.Commands
-            };
 
-            return keyInfo.Key switch
+            return context with
             {
-                ConsoleKey.Enter or ConsoleKey.LeftArrow or ConsoleKey.RightArrow or ConsoleKey.UpArrow or ConsoleKey.DownArrow => State.ExecuteCommands,
-                _ => State.InputCommands
+                Commands = keyInfo.Key switch
+                {
+                    ConsoleKey.L => $"{context.Commands}l",
+                    ConsoleKey.R => $"{context.Commands}r",
+                    ConsoleKey.F => $"{context.Commands}f",
+                    ConsoleKey.B => $"{context.Commands}b",
+                    ConsoleKey.LeftArrow => "l",
+                    ConsoleKey.RightArrow => "r",
+                    ConsoleKey.UpArrow => "f",
+                    ConsoleKey.DownArrow => "b",
+                    ConsoleKey.Backspace => context.Commands.Substring(0, Math.Max(0, context.Commands.Length - 1)),
+                    _ => context.Commands
+                },
+
+                State = keyInfo.Key switch
+                {
+                    ConsoleKey.Enter or ConsoleKey.LeftArrow or ConsoleKey.RightArrow or ConsoleKey.UpArrow or ConsoleKey.DownArrow => State.ExecuteCommands,
+                    _ => State.InputCommands
+                }
             };
         }
 
         private static void PromptInputCommands(StateMachineContext context)
         {
-            Write($"Input one or more commands: ");
+            PromptInputCommandsHeader(context);
             ForegroundColor = ConsoleColor.White;
             Write(context.Commands);
             (int left, int top) = GetCursorPosition();
@@ -187,25 +199,33 @@ namespace MarsRover.Console.Models
             CursorVisible = true;
         }
 
-        private static State SendRover(StateMachineContext context)
+        private static void PromptInputCommandsHeader(StateMachineContext context)
         {
-            context.Rover = Rover.CreateAndSendTo(context.Planet, context.Location, context.Orientation);
-            return State.InputCommands;
+            Write($"Now at {{X={context.Location.X},Y={context.Location.Y},O={context.Orientation}}}. Input one or more commands: ");
         }
 
-        private static State ExecuteCommands(StateMachineContext context)
+        private static StateMachineContext SendRover(StateMachineContext context)
+        {
+            return context with
+            {
+                Rover = Rover.CreateAndSendTo(context.Planet, context.Location, context.Orientation),
+                State = State.InputCommands
+            };
+        }
+
+        private static StateMachineContext ExecuteCommands(StateMachineContext context)
         {
             context.RenderQueue.Clear();
             Rover rover = context.Rover!;
 
-            void ReportCommandResult(bool successful, Point location, Orientation orientation)
+            void ReportCommandResult(bool isSuccessful, Point location, Orientation orientation)
             {
                 int commandIndex = context.RenderQueue.Count;
-                CommandResult commandResult = new(commandIndex, successful, location, orientation);
+                CommandResult commandResult = new(commandIndex, isSuccessful, location, orientation);
                 context.RenderQueue.Enqueue(commandResult);
             };
 
-            void HandleMoved(object? sender, MovedEventArgs args) => ReportCommandResult(successful: true, args.Location, args.Orientation);
+            void HandleMoved(object? sender, MovedEventArgs args) => ReportCommandResult(isSuccessful: true, args.Location, args.Orientation);
 
             rover.Moved += HandleMoved;
             try
@@ -213,48 +233,61 @@ namespace MarsRover.Console.Models
                 char[] commandsArray = context.Commands.ToCharArray();
                 rover.ExecuteCommands(commandsArray);
             }
-            catch
+            catch (ObstacleEncounteredException exc)
             {
-                ReportCommandResult(successful: false, rover.Location, rover.Orientation);
+                ReportCommandResult(isSuccessful: false, exc.ObstacleLocation, rover.Orientation);
             }
             finally
             {
                 rover.Moved -= HandleMoved;
             }
 
-            return State.RenderMovement;
+            return context with
+            {
+                State = State.RenderMovement
+            };
         }
 
-        private static State RenderMovement(StateMachineContext context)
+        private static StateMachineContext RenderMovement(StateMachineContext context)
         {
             // Simulate delay in command execution to give the user a chance to see what's happening
             Thread.Sleep(300);
 
             if (context.RenderQueue.Count == 0)
             {
-                context.Commands = string.Empty;
-                return State.InputCommands;
+                // We rendered every result, start over with a new batch of commands
+                return context with
+                {
+                    Commands = string.Empty,
+                    State = State.InputCommands
+                };
             }
 
             CommandResult result = context.RenderQueue.Dequeue();
-            context.Location = result.Location;
-            context.Orientation = result.Orientation;
-            DisplayCommandResult(context, result);
+            if (result.IsSuccessful)
+            {
+                context = context with
+                {
+                    Location = result.Location,
+                    Orientation = result.Orientation,
+                };
+            }
 
-            return State.RenderMovement;
+            DisplayCommandResult(context, result);
+            return context;
         }
 
         private static void DisplayCommandResult(StateMachineContext context, CommandResult result)
         {
-            Write($"Input one or more commands: ");
+            PromptInputCommandsHeader(context);
 
             for (int i = 0; i < context.Commands.Length; i++)
             {
-                if (i < result.Index || (i == result.Index && result.Successful))
+                if (i < result.Index || (i == result.Index && result.IsSuccessful))
                 {
                     BackgroundColor = ConsoleColor.DarkGreen;
                 }
-                else if (i == result.Index && !result.Successful)
+                else if (i == result.Index && !result.IsSuccessful)
                 {
                     BackgroundColor = ConsoleColor.DarkRed;
                 }
@@ -263,7 +296,7 @@ namespace MarsRover.Console.Models
                 ResetColor();
             }
 
-            if (!result.Successful)
+            if (!result.IsSuccessful)
             {
                 ForegroundColor = ConsoleColor.DarkRed;
                 Write(" ");
@@ -285,7 +318,7 @@ namespace MarsRover.Console.Models
                     ForegroundColor = ConsoleColor.DarkGray;
                     Write("Executing...");
                 }
-                
+
                 ResetColor();
                 WritePadding();
             }
