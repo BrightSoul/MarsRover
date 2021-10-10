@@ -47,10 +47,8 @@ rover.ExecuteCommands(commands.ToCharArray()); // Might throw ObstacleEncountere
 ## Coordinate system
 Each of the locations on a planet with e.g. `new Size(3, 2)` will be addressable by these set of coordinates on a XY plane.
 ```
-            N
-   o⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ +X
-   │(0,0) (1,0) (2,0)
-W  │(0,1) (1,1) (2,1)     E
-   +Y
-            S
+o⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ +X             
+│(0,0) (1,0) (2,0)               N
+│(0,1) (1,1) (2,1)             W ┼ E
++Y                               S
 ```
