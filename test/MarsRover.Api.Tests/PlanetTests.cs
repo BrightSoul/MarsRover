@@ -80,9 +80,9 @@ namespace MarsRover.Api.Test
         }
 
         [Test]
-        [TestCase(0.0, false)] // Invalid size, valid ratio
-        [TestCase(1.0, true)] // Invalid size, valid ratio
-        public void CreateWithRandomlyGeneratedOnstacles_PlacesObstaclesAccordingToRatio(double obstaclesToEmptySpaceRatio, bool expectToEncounterObstacle)
+        [TestCase(0.0, false)]
+        [TestCase(1.0, true)]
+        public void CreateWithRandomlyGeneratedObstacles_PlacesObstaclesAccordingToRatio(double obstaclesToEmptySpaceRatio, bool expectToEncounterObstacle)
         {
             // Arrange
             Size size = new(1, 1);
