@@ -15,7 +15,7 @@ namespace MarsRover.Api.Models
             this.orientation = orientation;
         }
 
-        public event EventHandler<(Point Location, Orientation Orientation)>? Moved;
+        public event EventHandler<MovedEventArgs>? Moved;
         public Point Location => location;
         public Orientation Orientation => orientation;
 
@@ -23,7 +23,7 @@ namespace MarsRover.Api.Models
         {
             if (planet.HasObstacleAt(location))
             {
-                throw new InvalidOperationException($"Location {location} is not suitable for deployment");
+                throw new ObstacleEncounteredException(planet, location);
             }
 
             return new Rover(planet, location, orientation);
@@ -41,42 +41,38 @@ namespace MarsRover.Api.Models
         {
             Action action = command switch
             {
-                'f' => GoForward,
-                'b' => GoBackward,
-                'l' => RotateLeft,
-                'r' => RotateRight,
+                'f' => MoveForward,
+                'b' => MoveBackward,
+                'l' => TurnLeft,
+                'r' => TurnRight,
                 _ => throw new NotSupportedException($"Command '{command}' not supported")
             };
 
             action.Invoke();
         }
 
-        private void GoForward()
+        #region Forward/Backward operations
+        private void MoveForward()
         {
-            Go(distanceInUnits: 1);
+            Move(distanceInUnits: 1);
         }
 
-        private void GoBackward()
+        private void MoveBackward()
         {
-            Go(distanceInUnits: -1);
+            Move(distanceInUnits: -1);
         }
 
-        private void Go(int distanceInUnits)
+        private void Move(int distanceInUnits)
         {
-            if (distanceInUnits == 0)
-            {
-                return;
-            }
-
             if (Math.Abs(distanceInUnits) != 1)
             {
                 throw new ArgumentException("This model can only move by one planetary unit at a time");
             }
 
             Point destination = CalculateDestination(distanceInUnits);
-            EnsureDestinationIsFreeOfObstacles(destination);
+            EnsureNoObstacleIsDetectedAt(destination);
 
-            // TODO: Invoke planet.Occupy(destination) here, in case we wanted to prevent
+            // TODO: Invoke planet.Occupy(rover, destination) here, in case we wanted to prevent
             // multiple rovers from overlapping. Sending multiple rovers to the same planet
             // was not a use case described in the specification though, so it was not implemented.
 
@@ -88,56 +84,70 @@ namespace MarsRover.Api.Models
         {
             return orientation switch
             {
-                Orientation.North => OffsetLocation(0, -1 * distanceInUnits),
-                Orientation.East => OffsetLocation(1 * distanceInUnits, 0),
-                Orientation.South => OffsetLocation(0, 1 * distanceInUnits),
-                Orientation.West => OffsetLocation(-1 * distanceInUnits, 0),
+                Orientation.North => OffsetCurrentLocationBy(0, distanceInUnits * -1),
+                Orientation.East => OffsetCurrentLocationBy(distanceInUnits, 0),
+                Orientation.South => OffsetCurrentLocationBy(0, distanceInUnits),
+                Orientation.West => OffsetCurrentLocationBy(distanceInUnits * -1, 0),
                 _ => throw new InvalidOperationException($"Orientation {orientation} not supported")
             };
         }
 
-        private Point OffsetLocation(int offsetX, int offsetY)
+        private Point OffsetCurrentLocationBy(int offsetX, int offsetY)
         {
             return new Point
             (
-                x: (location.X + offsetX + planet.Size.Width) % planet.Size.Width,
-                y: (location.Y + offsetY + planet.Size.Height) % planet.Size.Height
+                x: WrapValue(location.X + offsetX, planet.Size.Width),
+                y: WrapValue(location.Y + offsetY, planet.Size.Height)
             );
         }
 
-        private void EnsureDestinationIsFreeOfObstacles(Point destination)
+        private void EnsureNoObstacleIsDetectedAt(Point destination)
         {
             if (planet.HasObstacleAt(destination))
             {
                 throw new ObstacleEncounteredException(planet, destination);
             }
         }
+        #endregion
 
-        private void RotateLeft()
+        # region Turn operations
+        private void TurnLeft()
         {
-            Rotate(arcInDegrees: 90);
+            Turn(arcInDegrees: 90);
         }
 
-        private void RotateRight()
+        private void TurnRight()
         {
-            Rotate(arcInDegrees: -90);
+            Turn(arcInDegrees: -90);
         }
 
-        private void Rotate(int arcInDegrees)
+        private void Turn(int arcInDegrees)
         {
             if (Math.Abs(arcInDegrees) != 90)
             {
-                throw new ArgumentException("This model can only rotate by one 90 degree increment at a time");
+                throw new ArgumentException("This model can only turn by one 90 degree increment at a time");
             }
 
-            int finalOrientation = (((int)orientation + arcInDegrees) + 360) % 360;
-            orientation = (Orientation)finalOrientation;
+            int finalOrientationInDegrees = WrapValue((int)orientation + arcInDegrees, 360);
+            orientation = (Orientation)finalOrientationInDegrees;
             RaiseMoved();
         }
+        #endregion
 
         private void RaiseMoved()
         {
-            Moved?.Invoke(this, (location, orientation));
+            Moved?.Invoke(this, new MovedEventArgs(location, orientation));
+        }
+
+        private static int WrapValue(int value, int topExclusiveBound)
+        {
+            const int lowerInclusiveBound = 0;
+            while (value < lowerInclusiveBound)
+            {
+                value += topExclusiveBound;
+            }
+
+            return value % topExclusiveBound;
         }
     }
 }

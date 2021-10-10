@@ -6,28 +6,28 @@ namespace MarsRover.Api.Test
 {
     public class RoverTests
     {
-        private const char RotateLeftCommand = 'l';
-        private const char RotateRightCommand = 'r';
-        private const char GoForwardCommand = 'f';
-        private const char GoBackwardCommand = 'b';
+        private const char TurnLeftCommand = 'l';
+        private const char TurnRightCommand = 'r';
+        private const char MoveForwardCommand = 'f';
+        private const char MoveBackwardCommand = 'b';
 
         [Test]
-        [TestCase(GoForwardCommand, Orientation.North, 1, 1, 1, 0)] // In the middle, going north
-        [TestCase(GoForwardCommand, Orientation.East, 1, 1, 2, 1)]  // In the middle, going east
-        [TestCase(GoForwardCommand, Orientation.South, 1, 1, 1, 2)] // In the middle, going south
-        [TestCase(GoForwardCommand, Orientation.West, 1, 1, 0, 1)]  // In the middle, going west
-        [TestCase(GoForwardCommand, Orientation.North, 1, 0, 1, 2)] // At the top edge, going north
-        [TestCase(GoForwardCommand, Orientation.East, 2, 1, 0, 1)]  // At the right edge, going east
-        [TestCase(GoForwardCommand, Orientation.South, 1, 2, 1, 0)] // At the bottom edge, going south
-        [TestCase(GoForwardCommand, Orientation.West, 0, 1, 2, 1)]  // At the left edge, going west
-        [TestCase(GoBackwardCommand, Orientation.North, 1, 1, 1, 2)] // In the middle, reversing south
-        [TestCase(GoBackwardCommand, Orientation.East, 1, 1, 0, 1)]  // In the middle, reversing west
-        [TestCase(GoBackwardCommand, Orientation.South, 1, 1, 1, 0)] // In the middle, reversing north
-        [TestCase(GoBackwardCommand, Orientation.West, 1, 1, 2, 1)]  // In the middle, reversing east
-        [TestCase(GoBackwardCommand, Orientation.North, 1, 2, 1, 0)] // At the bottom edge, reversing south
-        [TestCase(GoBackwardCommand, Orientation.East, 0, 1, 2, 1)]  // At the left edge, reversing west
-        [TestCase(GoBackwardCommand, Orientation.South, 1, 0, 1, 2)] // At the top edge, reversing south
-        [TestCase(GoBackwardCommand, Orientation.West, 2, 1, 0, 1)]  // At the right edge, reversing east
+        [TestCase(MoveForwardCommand, Orientation.North, 1, 1, 1, 0)] // In the middle, going north
+        [TestCase(MoveForwardCommand, Orientation.East, 1, 1, 2, 1)]  // In the middle, going east
+        [TestCase(MoveForwardCommand, Orientation.South, 1, 1, 1, 2)] // In the middle, going south
+        [TestCase(MoveForwardCommand, Orientation.West, 1, 1, 0, 1)]  // In the middle, going west
+        [TestCase(MoveForwardCommand, Orientation.North, 1, 0, 1, 2)] // At the top edge, going north
+        [TestCase(MoveForwardCommand, Orientation.East, 2, 1, 0, 1)]  // At the right edge, going east
+        [TestCase(MoveForwardCommand, Orientation.South, 1, 2, 1, 0)] // At the bottom edge, going south
+        [TestCase(MoveForwardCommand, Orientation.West, 0, 1, 2, 1)]  // At the left edge, going west
+        [TestCase(MoveBackwardCommand, Orientation.North, 1, 1, 1, 2)] // In the middle, reversing south
+        [TestCase(MoveBackwardCommand, Orientation.East, 1, 1, 0, 1)]  // In the middle, reversing west
+        [TestCase(MoveBackwardCommand, Orientation.South, 1, 1, 1, 0)] // In the middle, reversing north
+        [TestCase(MoveBackwardCommand, Orientation.West, 1, 1, 2, 1)]  // In the middle, reversing east
+        [TestCase(MoveBackwardCommand, Orientation.North, 1, 2, 1, 0)] // At the bottom edge, reversing south
+        [TestCase(MoveBackwardCommand, Orientation.East, 0, 1, 2, 1)]  // At the left edge, reversing west
+        [TestCase(MoveBackwardCommand, Orientation.South, 1, 0, 1, 2)] // At the top edge, reversing south
+        [TestCase(MoveBackwardCommand, Orientation.West, 2, 1, 0, 1)]  // At the right edge, reversing east
         public void ExecuteCommands_UpdatesLocationAndKeepsOrientation_WhenMovingForwardOrBackwardWithNoObstacles(char command, Orientation deployOrientation, int deployLocationX, int deployLocationY, int expectedFinalLocationX, int expectedFinalLocationY)
         {
             // Arrange
@@ -57,8 +57,8 @@ namespace MarsRover.Api.Test
         }
 
         [Test]
-        [TestCase(GoForwardCommand, Orientation.West, 0, 0, 1, 0)]  // At the left edge, going west
-        [TestCase(GoBackwardCommand, Orientation.West, 1, 0, 0, 0)]  // At the left edge, going west
+        [TestCase(MoveForwardCommand, Orientation.West, 0, 0, 1, 0)]  // At the left edge, going west
+        [TestCase(MoveBackwardCommand, Orientation.West, 1, 0, 0, 0)]  // At the left edge, going west
         public void ExecuteCommands_RaisesException_WhenMovingForwardOrBackwardToAnObstacle(char command, Orientation deployOrientation, int deployLocationX, int deployLocationY, int destinationX, int destinationY)
         {
             // Arrange
@@ -78,9 +78,9 @@ namespace MarsRover.Api.Test
         }
 
         [Test]
-        [TestCase(RotateLeftCommand, Orientation.West, Orientation.South, Orientation.East, Orientation.North)]
-        [TestCase(RotateRightCommand, Orientation.East, Orientation.South, Orientation.West, Orientation.North)]
-        public void ExecuteCommands_UpdatesOrientationAndKeepsLocation_WhenRotatingLeftOrRight(char command, params Orientation[] expectedOrientations)
+        [TestCase(TurnLeftCommand, Orientation.West, Orientation.South, Orientation.East, Orientation.North)]
+        [TestCase(TurnRightCommand, Orientation.East, Orientation.South, Orientation.West, Orientation.North)]
+        public void ExecuteCommands_UpdatesOrientationAndKeepsLocation_WhenTurningLeftOrRight(char command, params Orientation[] expectedOrientations)
         {
             // Arrange
             Size size = new(3, 3);

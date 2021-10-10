@@ -6,7 +6,7 @@ namespace MarsRover.Api.Models
     public class ObstacleEncounteredException : InvalidOperationException
     {
         public ObstacleEncounteredException(Planet planet, Point obstacleLocation)
-            : base($"Could not reach destination: an obstacle was encountered at {obstacleLocation}")
+            : base($"Location {obstacleLocation} is obstructed by an obstacle")
         {
             Planet = planet;
             ObstacleLocation = obstacleLocation;
