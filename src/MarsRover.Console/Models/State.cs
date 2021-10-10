@@ -1,6 +1,6 @@
 ﻿namespace MarsRover.Console.Models
 {
-    public enum MachineState
+    public enum State
     {
         InputSendLocation,
         InputSendOrientation,

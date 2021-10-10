@@ -14,7 +14,7 @@ namespace MarsRover.Console.Models
 
         public string Title { get; }
         public Planet Planet { get; }
-        public MachineState State { get; set; }
+        public State State { get; set; }
         public Point Location { get; set; }
         public Orientation Orientation { get; set; }
         public string Commands = string.Empty;
