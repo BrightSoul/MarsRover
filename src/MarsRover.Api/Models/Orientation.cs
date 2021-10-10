@@ -2,9 +2,10 @@ namespace MarsRover.Api.Models
 {
     public enum Orientation : int
     {
-        East = 0, // degrees
-        North = 90,
-        West = 180,
-        South = 270
+        // Angle offsets in degrees
+        North = 0,
+        East = 90,
+        South = 180,
+        West = 270
     }
 }

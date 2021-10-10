@@ -113,22 +113,22 @@ namespace MarsRover.Api.Models
         # region Turn operations
         private void TurnLeft()
         {
-            Turn(arcInDegrees: 90);
+            Turn(angleInDegrees: -90);
         }
 
         private void TurnRight()
         {
-            Turn(arcInDegrees: -90);
+            Turn(angleInDegrees: 90);
         }
 
-        private void Turn(int arcInDegrees)
+        private void Turn(int angleInDegrees)
         {
-            if (Math.Abs(arcInDegrees) != 90)
+            if (Math.Abs(angleInDegrees) != 90)
             {
                 throw new ArgumentException("This model can only turn by one 90 degree increment at a time");
             }
 
-            int finalOrientationInDegrees = WrapValue((int)orientation + arcInDegrees, 360);
+            int finalOrientationInDegrees = WrapValue((int)orientation + angleInDegrees, 360);
             orientation = (Orientation)finalOrientationInDegrees;
             RaiseMoved();
         }
