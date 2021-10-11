@@ -39,7 +39,7 @@ namespace MarsRover.Api.Models
 
         private void ExecuteCommand(char command)
         {
-            Action action = command switch
+            Action actuate = command switch
             {
                 'f' => MoveForward,
                 'b' => MoveBackward,
@@ -48,7 +48,7 @@ namespace MarsRover.Api.Models
                 _ => throw new NotSupportedException($"Command '{command}' not supported")
             };
 
-            action.Invoke();
+            actuate();
         }
 
         #region Forward/Backward operations
