@@ -51,10 +51,10 @@ namespace MarsRover.Console.Models
                         {
                             square = context.Orientation switch
                             {
-                                Orientation.North => '↑',
-                                Orientation.East => '→',
-                                Orientation.West => '←',
-                                Orientation.South => '↓',
+                                Orientation.North => '^',
+                                Orientation.East => '>',
+                                Orientation.West => '<',
+                                Orientation.South => 'v',
                                 _ => square
                             };
                         }
