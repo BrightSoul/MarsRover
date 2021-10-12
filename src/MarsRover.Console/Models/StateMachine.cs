@@ -207,8 +207,13 @@ namespace MarsRover.Console.Models
 
         private static StateMachineContext ExecuteCommands(StateMachineContext context)
         {
+            if (context.Rover == null)
+            {
+                throw new InvalidOperationException("Rover is not null");
+            }
+            
             context.RenderQueue.Clear();
-            Rover rover = context.Rover!;
+            Rover rover = context.Rover;
 
             void ReportCommandResult(bool isSuccessful, Point location, Orientation orientation)
             {
@@ -220,6 +225,7 @@ namespace MarsRover.Console.Models
             void HandleMoved(object? sender, MovedEventArgs args) => ReportCommandResult(isSuccessful: true, args.Location, args.Orientation);
 
             rover.Moved += HandleMoved;
+            
             try
             {
                 char[] commandsArray = context.Commands.ToCharArray();
