@@ -11,6 +11,6 @@ namespace MarsRover.Console.Models
         public Point Location { get; init; }
         public Orientation Orientation { get; init; }
         public string Commands { get; init; } = string.Empty;
-        public Queue<CommandResult> RenderQueue { get; } = new Queue<CommandResult>();
+        public Queue<CommandResult> RenderQueue { get; } = new();
     }
 }
